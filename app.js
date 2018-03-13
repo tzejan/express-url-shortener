@@ -1,18 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const fetchUrl = require("fetch").fetchUrl;
 
 // load our own helper functions
 const encode = require("./demo/encode");
 const decode = require("./demo/decode");
 
-function getNextId() {
-  return "" + (existingURLs.length + 1);
-}
-
 let existingURLs = [];
 
 const app = express();
 app.use(bodyParser.json());
+
+function getNextId() {
+  return "" + (existingURLs.length + 1);
+}
 
 // TODO: Implement functionalities specified in README
 app.get("/", function(req, res) {
@@ -32,15 +33,28 @@ app.get("/:hash", (req, res) => {
   }
 });
 
-app.post("/shorten-url", (req, res) => {
+app.post("/shorten-url", (req, res, next) => {
   let receivedURL = req.body.url;
-  let urlHash = encode(receivedURL, existingURLs);
-  let existingEntry = existingURLs.filter(data => data.hash === urlHash);
-  if (existingEntry.length === 0) {
-    existingURLs.push({ id: getNextId(), url: receivedURL, hash: urlHash });
-  }
-  let returnObj = { hash: urlHash };
-  res.send(returnObj);
+
+  const fetchOptions = { method: "GET" };
+
+  fetchUrl(receivedURL, fetchOptions, function(error, meta, body) {
+    if (error) {
+      let errorMsg = {
+        message: `'${receivedURL}' is not a valid URL`
+      };
+      res.status(400).send(errorMsg);
+      return;
+    }
+
+    let urlHash = encode(receivedURL, existingURLs);
+    let existingEntry = existingURLs.filter(data => data.hash === urlHash);
+    if (existingEntry.length === 0) {
+      existingURLs.push({ id: getNextId(), url: receivedURL, hash: urlHash });
+    }
+    let returnObj = { hash: urlHash };
+    res.send(returnObj);
+  });
 });
 
 app.post("/expand-url", (req, res) => {
