@@ -38,7 +38,7 @@ app.post("/expand-url", (req, res) => {
     res.send(result);
   } catch (error) {
     let errorMsg = {
-      message: `There is no long URL registered for hash value 'MTAwMDA='`
+      message: `There is no long URL registered for hash value '${receivedHash}'`
     };
     res.status(404).send(errorMsg);
   }
