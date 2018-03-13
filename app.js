@@ -19,6 +19,19 @@ app.get("/", function(req, res) {
   res.send("Hello world!");
 });
 
+app.get("/:hash", (req, res) => {
+  let requestedHash = req.params.hash;
+  try {
+    let storedURL = decode(requestedHash, existingURLs);
+    res.redirect(storedURL);
+  } catch (error) {
+    let errorMsg = {
+      message: `There is no long URL registered for hash value '${requestedHash}'`
+    };
+    res.status(404).send(errorMsg);
+  }
+});
+
 app.post("/shorten-url", (req, res) => {
   let receivedURL = req.body.url;
   let urlHash = encode(receivedURL, existingURLs);
