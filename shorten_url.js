@@ -7,12 +7,7 @@ const encode = require("./demo/encode");
 const decode = require("./demo/decode");
 var router = express.Router();
 
-
 let existingURLs = [];
-
-function getNextId() {
-  return "" + (existingURLs.length + 1);
-}
 
 // TODO: Implement functionalities specified in README
 router.get("/", function(req, res) {
@@ -32,6 +27,19 @@ router.get("/:hash", (req, res) => {
   }
 });
 
+function getNextId() {
+  return "" + (existingURLs.length + 1);
+}
+
+function addURLtoDB(url) {
+  let urlHash = encode(url, existingURLs);
+  let existingEntry = existingURLs.filter(data => data.hash === urlHash);
+  if (existingEntry.length === 0) {
+    existingURLs.push({ id: getNextId(), url: url, hash: urlHash });
+  }
+  return urlHash;
+}
+
 router.post("/shorten-url", (req, res, next) => {
   let receivedURL = req.body.url;
 
@@ -46,11 +54,7 @@ router.post("/shorten-url", (req, res, next) => {
       return;
     }
 
-    let urlHash = encode(receivedURL, existingURLs);
-    let existingEntry = existingURLs.filter(data => data.hash === urlHash);
-    if (existingEntry.length === 0) {
-      existingURLs.push({ id: getNextId(), url: receivedURL, hash: urlHash });
-    }
+    let urlHash = addURLtoDB(receivedURL);
     let returnObj = { hash: urlHash };
     res.send(returnObj);
   });
