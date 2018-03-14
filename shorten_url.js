@@ -40,21 +40,28 @@ function addURLtoDB(url) {
 
 function shortenURL(req, res) {
   let receivedURL = req.body.url;
-
   const fetchOptions = { method: "GET" };
 
-  fetchUrl(receivedURL, fetchOptions, function(error, meta, body) {
-    if (error) {
-      let errorMsg = {
+  try {
+    fetchUrl(receivedURL, fetchOptions, function(error, meta, body) {
+      if (error) {
+        let errorMsg = {
+          message: `'${receivedURL}' is not a valid URL`
+        };
+        res.status(400).send(errorMsg);
+      }
+
+      let urlHash = addURLtoDB(receivedURL);
+      let returnObj = { hash: urlHash };
+      res.send(returnObj);
+    });
+  } catch (error) {
+    console.log(`ERROR in request. Received url = ${receivedURL}`);
+    let errorMsg = {
         message: `'${receivedURL}' is not a valid URL`
       };
       res.status(400).send(errorMsg);
-    }
-
-    let urlHash = addURLtoDB(receivedURL);
-    let returnObj = { hash: urlHash };
-    res.send(returnObj);
-  });
+  }
 }
 
 function expandUrl(req, res) {
@@ -90,6 +97,7 @@ function deleteUrl(req, res) {
   }
 }
 
+// router.get("/shorten-url", shortenURL);
 router.get("/:hash", redirectHash);
 router.post("/shorten-url", shortenURL);
 router.post("/expand-url", expandUrl);
