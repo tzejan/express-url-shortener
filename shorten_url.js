@@ -6,14 +6,13 @@ const fetchUrl = require("fetch").fetchUrl;
 // load our own helper functions
 const encode = require("./demo/encode");
 const decode = require("./demo/decode");
-const requestLogger = require("./utils/requestLogger")
+const requestLogger = require("./utils/requestLogger");
 
 let existingURLs = [];
 
-
 router.use(requestLogger);
 
-router.get("/:hash", (req, res) => {
+function redirectHash(req, res) {
   let requestedHash = req.params.hash;
   try {
     let storedURL = decode(requestedHash, existingURLs);
@@ -24,7 +23,7 @@ router.get("/:hash", (req, res) => {
     };
     res.status(404).send(errorMsg);
   }
-});
+}
 
 function getNextId() {
   return "" + (existingURLs.length + 1);
@@ -39,7 +38,7 @@ function addURLtoDB(url) {
   return urlHash;
 }
 
-router.post("/shorten-url", (req, res, next) => {
+function shortenURL(req, res) {
   let receivedURL = req.body.url;
 
   const fetchOptions = { method: "GET" };
@@ -50,16 +49,15 @@ router.post("/shorten-url", (req, res, next) => {
         message: `'${receivedURL}' is not a valid URL`
       };
       res.status(400).send(errorMsg);
-      return;
     }
 
     let urlHash = addURLtoDB(receivedURL);
     let returnObj = { hash: urlHash };
     res.send(returnObj);
   });
-});
+}
 
-router.post("/expand-url", (req, res) => {
+function expandUrl(req, res) {
   let receivedHash = req.body.hash;
   try {
     let storedURL = decode(receivedHash, existingURLs);
@@ -71,9 +69,9 @@ router.post("/expand-url", (req, res) => {
     };
     res.status(404).send(errorMsg);
   }
-});
+}
 
-router.delete("/expand-url/:hash", (req, res) => {
+function deleteUrl(req, res) {
   let hashToDelete = req.params.hash;
   try {
     let storedURL = decode(hashToDelete, existingURLs);
@@ -90,6 +88,11 @@ router.delete("/expand-url/:hash", (req, res) => {
     };
     res.status(404).send(errorMsg);
   }
-});
+}
+
+router.get("/:hash", redirectHash);
+router.post("/shorten-url", shortenURL);
+router.post("/expand-url", expandUrl);
+router.delete("/expand-url/:hash", deleteUrl);
 
 module.exports = router;
