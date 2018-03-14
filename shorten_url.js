@@ -1,18 +1,17 @@
 var express = require("express");
+var router = express.Router();
 
 const fetchUrl = require("fetch").fetchUrl;
 
 // load our own helper functions
 const encode = require("./demo/encode");
 const decode = require("./demo/decode");
-var router = express.Router();
+const requestLogger = require("./utils/requestLogger")
 
 let existingURLs = [];
 
-// TODO: Implement functionalities specified in README
-router.get("/", function(req, res) {
-  res.send("Hello world!");
-});
+
+router.use(requestLogger);
 
 router.get("/:hash", (req, res) => {
   let requestedHash = req.params.hash;
