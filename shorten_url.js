@@ -79,7 +79,7 @@ function expandUrl(req, res, next) {
   retrieveURLfromDB(receivedHash)
     .then(storedURL => {
       let result = { url: storedURL };
-      res.send(result);
+      res.json(result);
     })
     .catch(error => {
       console.log(error);

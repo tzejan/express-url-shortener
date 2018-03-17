@@ -10,7 +10,7 @@ counterSchema.statics.getNextIndex = async function() {
   let result = await this.findByIdAndUpdate(
     "counter",
     { $inc: { count: 1 } },
-    { new: true, upsert: true, setDefaultsOnInsert: true}
+    { new: true, upsert: true, setDefaultsOnInsert: true }
   )
   return result.count;
 };;
