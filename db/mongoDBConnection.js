@@ -6,8 +6,6 @@ async function connectMongoDB() {
     await mongoose.connect("mongodb://localhost/express-url-shortener");
     /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
     console.log("Mongoose connected!");
-    // let index = await Counter.getNextIndex();
-    // console.log(index);
   } catch (error) {
     console.log(error);
     console.log("Mongoose connection problem!");
