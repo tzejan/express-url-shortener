@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+const Counter = require("./models/Counter");
+const HashedURL = require("./models/HashedURL");
 
 const fetchUrl = require("fetch").fetchUrl;
 
@@ -7,6 +9,7 @@ const fetchUrl = require("fetch").fetchUrl;
 const encode = require("./demo/encode");
 const decode = require("./demo/decode");
 const requestLogger = require("./utils/requestLogger");
+const btoa = require("btoa");
 
 let existingURLs = [];
 
@@ -25,42 +28,43 @@ function redirectHash(req, res) {
   }
 }
 
-function getNextId() {
-  return "" + (existingURLs.length + 1);
-}
-
-function addURLtoDB(url) {
-  let urlHash = encode(url, existingURLs);
-  let existingEntry = existingURLs.filter(data => data.hash === urlHash);
+async function addURLtoDB(url) {
+  let urlHash = "";
+  let existingEntry = await HashedURL.find({ url: url });
   if (existingEntry.length === 0) {
-    existingURLs.push({ id: getNextId(), url: url, hash: urlHash });
+    console.log(`${url} not found, adding new entry`);
+    let index = await Counter.getNextIndex();
+    urlHash = btoa(index);
+    let newHashedURL = new HashedURL({ _id: index, hash: urlHash, url: url });
+    await newHashedURL.save();
+  } else {
+    urlHash = existingEntry[0].hash;
   }
   return urlHash;
 }
 
-function shortenURL(req, res) {
+function shortenURL(req, res, next) {
   let receivedURL = req.body.url;
   const fetchOptions = { method: "GET" };
 
   try {
     fetchUrl(receivedURL, fetchOptions, function(error, meta, body) {
-      if (error) {
-        let errorMsg = {
-          message: `'${receivedURL}' is not a valid URL`
-        };
-        res.status(400).send(errorMsg);
-      }
-
-      let urlHash = addURLtoDB(receivedURL);
-      let returnObj = { hash: urlHash };
-      res.send(returnObj);
+      if (error) throw error;
+      addURLtoDB(receivedURL)
+        .then(urlHash => {
+          let returnObj = { hash: urlHash };
+          res.json(returnObj);
+        })
+        .catch(error => {
+          next(error);
+        });
     });
   } catch (error) {
     console.log(`ERROR in request. Received url = ${receivedURL}`);
     let errorMsg = {
-        message: `'${receivedURL}' is not a valid URL`
-      };
-      res.status(400).send(errorMsg);
+      message: `'${receivedURL}' is not a valid URL`
+    };
+    res.status(400).send(errorMsg);
   }
 }
 

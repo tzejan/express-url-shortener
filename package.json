@@ -2,8 +2,8 @@
   "name": "express-url-shortener",
   "version": "1.0.0",
   "main": "server.js",
-  "repository": "https://www.github.com/davified/express-url-shortener",
-  "author": "davidtan <davidtan@thoughtworks.com>",
+  "repository": "https://github.com/tzejan/express-url-shortener.git",
+  "author": "Sim Tze Jan <tzejan@gmail.com>",
   "license": "MIT",
   "scripts": {
     "start": "node server.js",
@@ -19,6 +19,7 @@
     "mongoose": "^5.0.10"
   },
   "devDependencies": {
-    "jest": "^22.4.2"
+    "jest": "^22.4.2",
+    "supertest": "^3.0.0"
   }
 }

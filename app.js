@@ -2,6 +2,11 @@ const express = require("express");
 const shorten_url = require("./shorten_url");
 const bodyParser = require("body-parser");
 
+const connectMongoDB = require("./db/mongoDBConnection");
+const Counter = require("./models/Counter");
+
+connectMongoDB();
+
 const app = express();
 app.use(bodyParser.json());
 
