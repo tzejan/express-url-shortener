@@ -68,18 +68,28 @@ function shortenURL(req, res, next) {
   }
 }
 
-function expandUrl(req, res) {
-  let receivedHash = req.body.hash;
-  try {
-    let storedURL = decode(receivedHash, existingURLs);
-    let result = { url: storedURL };
-    res.send(result);
-  } catch (error) {
-    let errorMsg = {
-      message: `There is no long URL registered for hash value '${receivedHash}'`
-    };
-    res.status(404).send(errorMsg);
+async function retrieveURLfromDB(hash) {
+  let hashedEntry = await HashedURL.findOne({ hash: hash });
+  if (hashedEntry) {
+    return hashedEntry.url;
   }
+  throw new Error("Hash does not exist");
+}
+
+function expandUrl(req, res, next) {
+  let receivedHash = req.body.hash;
+  retrieveURLfromDB(receivedHash)
+    .then(storedURL => {
+      let result = { url: storedURL };
+      res.send(result);
+    })
+    .catch(error => {
+      console.log(error);
+      let errorMsg = {
+        message: `There is no long URL registered for hash value '${receivedHash}'`
+      };
+      res.status(404).send(errorMsg);
+    });
 }
 
 function deleteUrl(req, res) {
