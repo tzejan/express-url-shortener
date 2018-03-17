@@ -92,23 +92,30 @@ function expandUrl(req, res, next) {
     });
 }
 
+async function deleteHashFromDB(hashToDelete) {
+  let result = await HashedURL.deleteOne({ hash: hashToDelete });
+  console.log(result);
+  if (result.n === 0){
+    throw new Error("No such hash exist")
+  }
+  return result.n;
+}
+
 function deleteUrl(req, res) {
   let hashToDelete = req.params.hash;
-  try {
-    let storedURL = decode(hashToDelete, existingURLs);
-    existingURLs = existingURLs.filter(
-      element => element.hash !== hashToDelete
-    );
-    let message = {
-      message: `URL with hash value '${hashToDelete}' deleted successfully`
-    };
-    res.send(message);
-  } catch (error) {
-    let errorMsg = {
-      message: `URL with hash value '${hashToDelete}' does not exist`
-    };
-    res.status(404).send(errorMsg);
-  }
+  deleteHashFromDB(hashToDelete)
+    .then(result => {
+      let message = {
+        message: `URL with hash value '${hashToDelete}' deleted successfully`
+      };
+      res.send(message);
+    })
+    .catch(error => {
+      let errorMsg = {
+        message: `URL with hash value '${hashToDelete}' does not exist`
+      };
+      res.status(404).send(errorMsg);
+    });
 }
 
 router.get("/:hash", redirectHash);
