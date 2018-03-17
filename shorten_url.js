@@ -6,8 +6,6 @@ const HashedURL = require("./models/HashedURL");
 const fetchUrl = require("fetch").fetchUrl;
 
 // load our own helper functions
-const encode = require("./demo/encode");
-const decode = require("./demo/decode");
 const requestLogger = require("./utils/requestLogger");
 const btoa = require("btoa");
 
