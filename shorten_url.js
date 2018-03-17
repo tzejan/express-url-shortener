@@ -17,15 +17,15 @@ router.use(requestLogger);
 
 function redirectHash(req, res) {
   let requestedHash = req.params.hash;
-  try {
-    let storedURL = decode(requestedHash, existingURLs);
-    res.redirect(storedURL);
-  } catch (error) {
-    let errorMsg = {
-      message: `There is no long URL registered for hash value '${requestedHash}'`
-    };
-    res.status(404).send(errorMsg);
-  }
+  retrieveURLfromDB(requestedHash)
+    .then(storedURL => res.redirect(storedURL))
+    .catch(error => {
+      console.log(error);
+      let errorMsg = {
+        message: `There is no long URL registered for hash value '${requestedHash}'`
+      };
+      res.status(404).send(errorMsg);
+    });
 }
 
 async function addURLtoDB(url) {
@@ -111,7 +111,6 @@ function deleteUrl(req, res) {
   }
 }
 
-// router.get("/shorten-url", shortenURL);
 router.get("/:hash", redirectHash);
 router.post("/shorten-url", shortenURL);
 router.post("/expand-url", expandUrl);
