@@ -24,7 +24,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.send("server dieded processing your request");
+  res.send("Server dieded processing your request, its last words were - " + err.message);
 });
 
 module.exports = app;
