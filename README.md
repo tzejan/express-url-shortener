@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/tzejan/express-url-shortener.svg?branch=master)](https://travis-ci.org/tzejan/express-url-shortener)
+
 # Build a URL shortener web service using Express.js 
 
 Build a URL-shortener service like [bit.ly](https://bitly.com/) or [goo.gl](https://goo.gl/) using Express.js.
