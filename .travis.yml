@@ -9,3 +9,4 @@ deploy:
   app: cryptic-oasis-37549
   on:
     repo: tzejan/express-url-shortener
+    node: '9.8.0'
