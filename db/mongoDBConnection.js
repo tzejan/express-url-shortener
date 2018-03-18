@@ -3,7 +3,8 @@ const Counter = require("../models/Counter");
 
 async function connectMongoDB() {
   try {
-    await mongoose.connect("mongodb://localhost/express-url-shortener");
+    console.log("Trying to connect to "+process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     /** ready to use. The `mongoose.connect()` promise resolves to undefined. */
     console.log("Mongoose connected!");
   } catch (error) {

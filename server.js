@@ -1,3 +1,4 @@
+require('dotenv').config();
 const connectMongoDB = require("./db/mongoDBConnection");
 const app = require("./app");
 
