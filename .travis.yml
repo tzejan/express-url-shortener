@@ -1,11 +1,11 @@
 language: node_js
 node_js:
 - iojs
-- '7'
+- '9.8.0'
 deploy:
   provider: heroku
   api_key:
     secure: EVlPYZKARxvgV14lGc4ikZO6nNtSMA62kcLxbZKVVjQAOE82CRC4LXrpr0eg6jrT16H3aV+orOrcC1VvhdKVTgtEk35KgSarAmZ05t1TcaPEWIS5joBvybrnbZANKRg8ZSeN9bJSKOsvWaHPd8k/C7AYtwDXEPKm9X8VAXt5KOuRuFI7YpKglSc82QyBLvZGAWBSz/EX7gwtGq+g7CtMs17eNoUk0NzqLy9aydKy+X/eCFXK4o5kuXLGx3vCEtD8jbvwJisElBZc3mcy24Uext6AcCkzUNfSCWzFkD8h8ruNS3w6uwFhYmmQ80ygE1eRT+vUPdhumPYijMhH4VH2T9zrkbRTN6N5Fg1sFDMbdNJirdsYDTAo9W+C7g3aqbK0hSY31dyTU1s470edIiOvKo1zl11UvSDvltSilal6iUaNG0JXdVToyHfoiqXnHJstfLPLwZgqLFweNnp6s0TAY/kebNf4kBjqdkbeeG9VWaYuEfuSLRgjOO8cfVPf43WY7QSxRs1zmdM6jV1N2JnFzwVQnvdKiruF+3M+IbCD+Zf5jPIPOM6E2GG5ztMYB2KU0XPHvfhNhr2js1g1wch+x/EJiwl+uENQ590+u+UIijHssEnq3P2ik2vc395NPUTrxjELiDg0EFQ2gJ/CjO6kqIgV60dK2Ya3muL7eJufAP8=
-  app: express-url-shortener
+  app: cryptic-oasis-37549
   on:
     repo: tzejan/express-url-shortener
