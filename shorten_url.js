@@ -7,7 +7,6 @@ const fetchUrl = require("fetch").fetchUrl;
 
 // load our own helper functions
 const requestLogger = require("./utils/requestLogger");
-const btoa = require("btoa");
 
 let existingURLs = [];
 
@@ -15,7 +14,7 @@ router.use(requestLogger);
 
 function redirectHash(req, res) {
   let requestedHash = req.params.hash;
-  retrieveURLfromDB(requestedHash)
+  HashedURL.retrieveURLfromDB(requestedHash)
     .then(storedURL => res.redirect(storedURL))
     .catch(error => {
       console.log(error);
@@ -26,21 +25,6 @@ function redirectHash(req, res) {
     });
 }
 
-async function addURLtoDB(url) {
-  let urlHash = "";
-  let existingEntry = await HashedURL.find({ url: url });
-  if (existingEntry.length === 0) {
-    console.log(`${url} not found, adding new entry`);
-    let index = await Counter.getNextIndex();
-    urlHash = btoa(index);
-    let newHashedURL = new HashedURL({ _id: index, hash: urlHash, url: url });
-    await newHashedURL.save();
-  } else {
-    urlHash = existingEntry[0].hash;
-  }
-  return urlHash;
-}
-
 function shortenURL(req, res, next) {
   let receivedURL = req.body.url;
   const fetchOptions = { method: "GET" };
@@ -48,7 +32,7 @@ function shortenURL(req, res, next) {
   try {
     fetchUrl(receivedURL, fetchOptions, function(error, meta, body) {
       if (error) throw error;
-      addURLtoDB(receivedURL)
+      HashedURL.addURLtoDB(receivedURL)
         .then(urlHash => {
           let returnObj = { hash: urlHash };
           res.json(returnObj);
@@ -66,17 +50,9 @@ function shortenURL(req, res, next) {
   }
 }
 
-async function retrieveURLfromDB(hash) {
-  let hashedEntry = await HashedURL.findOne({ hash: hash });
-  if (hashedEntry) {
-    return hashedEntry.url;
-  }
-  throw new Error("Hash does not exist");
-}
-
 function expandUrl(req, res, next) {
   let receivedHash = req.body.hash;
-  retrieveURLfromDB(receivedHash)
+  HashedURL.retrieveURLfromDB(receivedHash)
     .then(storedURL => {
       let result = { url: storedURL };
       res.json(result);
@@ -90,18 +66,9 @@ function expandUrl(req, res, next) {
     });
 }
 
-async function deleteHashFromDB(hashToDelete) {
-  let result = await HashedURL.deleteOne({ hash: hashToDelete });
-  console.log(result);
-  if (result.n === 0){
-    throw new Error("No such hash exist")
-  }
-  return result.n;
-}
-
 function deleteUrl(req, res) {
   let hashToDelete = req.params.hash;
-  deleteHashFromDB(hashToDelete)
+  HashedURL.deleteHashFromDB(hashToDelete)
     .then(result => {
       let message = {
         message: `URL with hash value '${hashToDelete}' deleted successfully`

@@ -62,12 +62,12 @@ describe("shorten URL endpoint tests", () => {
         .send({ url: "http://www.peppa.com" })
 
         .then(response => {
-          // console.log(response);
+        //   console.log(response.body);
           expect(response.status).toEqual(200);
           expect(response.body).toHaveProperty("hash");
         });
     });
-    it("should not create new data for valid URLs", async () => {
+    it("should not create new data for existing URLs", async () => {
       let url = "http://www.peppapig.com";
       let data = new HashedURL({
         _id: 1,
