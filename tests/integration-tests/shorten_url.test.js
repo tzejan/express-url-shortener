@@ -1,3 +1,4 @@
+process.env.NODE_ENV = "test";
 const app = require("../../app");
 const request = require("supertest");
 
@@ -5,6 +6,7 @@ const mongoose = require("mongoose");
 const MongodbMemoryServer = require("mongodb-memory-server").default;
 
 const HashedURL = require("../../models/HashedURL");
+const connectMongoDB = require("../../db/mongoDBConnection");
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
@@ -12,10 +14,8 @@ let mongoServer;
 let db;
 beforeAll(async () => {
   mongoServer = new MongodbMemoryServer();
-  const mongoUri = await mongoServer.getConnectionString();
-  db = await mongoose.connect(mongoUri, err => {
-    if (err) console.error(err);
-  });
+  process.env.MONGODB_URI = await mongoServer.getConnectionString();
+  db = await connectMongoDB();
 
   console.log("Mongo Memory server setup!");
 });
@@ -43,6 +43,7 @@ describe("shorten URL endpoint tests", () => {
 
         .then(response => {
           expect(response.status).toEqual(302);
+          expect(response.header.location).toEqual(data.url)
         });
     });
 
@@ -62,7 +63,7 @@ describe("shorten URL endpoint tests", () => {
         .send({ url: "http://www.peppa.com" })
 
         .then(response => {
-        //   console.log(response.body);
+          //   console.log(response.body);
           expect(response.status).toEqual(200);
           expect(response.body).toHaveProperty("hash");
         });
